@@ -22,6 +22,7 @@ import {
   type Vote,
 } from '@/lib/syndicationRooms.functions'
 import { supabase } from '@/integrations/supabase/client'
+import { useNetwork } from './store'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -99,6 +100,10 @@ function CreateRoomForm({ onCreated, onCancel }: CreateFormProps) {
   const [opportunitySize, setOpportunitySize] = useState('')
   const [deadline, setDeadline] = useState('')
   const [inviteEmails, setInviteEmails] = useState('')
+  const [selectedInvitees,setSelectedInvitees] = useState<string[]>([])
+  const [inviteFilter,setInviteFilter] = useState('')
+  const network = useNetwork()
+  const candidates = network.members.filter(p => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(p.id) && (!inviteFilter || p.name.toLowerCase().includes(inviteFilter.toLowerCase())))
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -113,13 +118,14 @@ function CreateRoomForm({ onCreated, onCancel }: CreateFormProps) {
         .map(s => s.trim())
         .filter(Boolean)
 
-      let inviteUserIds: string[] = []
+      let inviteUserIds: string[] = [...selectedInvitees]
       if (emailList.length > 0) {
-        const { data: profiles } = await (supabase as any)
+        const { data: profiles, error: lookupError } = await (supabase as any)
           .from('profiles')
           .select('id, email')
           .in('email', emailList)
-        inviteUserIds = (profiles ?? []).map((p: { id: string }) => p.id)
+        if (lookupError || (profiles ?? []).length !== new Set(emailList).size) throw new Error('One or more email invitations could not be verified. Select the members from the directory instead.')
+        inviteUserIds = [...new Set([...inviteUserIds, ...(profiles ?? []).map((p: {id:string}) => p.id)])]
       }
 
       const room = await createSyndicationRoom({ data: {
@@ -207,8 +213,19 @@ function CreateRoomForm({ onCreated, onCancel }: CreateFormProps) {
         </label>
       </div>
 
+      <div className="syn-field">
+        <label htmlFor="syn-member-filter">Invite members from your directory ({selectedInvitees.length} selected)</label>
+        <input id="syn-member-filter" className="syn-input" value={inviteFilter} onChange={e=>setInviteFilter(e.target.value)} placeholder="Find a member by name"/>
+        <div className="syn-invite-list" role="group" aria-label="Select members to invite">
+          {candidates.slice(0,50).map(member=><label key={member.id}>
+            <input type="checkbox" checked={selectedInvitees.includes(member.id)} disabled={selectedInvitees.length>=50&&!selectedInvitees.includes(member.id)} onChange={e=>setSelectedInvitees(previous=>e.target.checked?[...previous,member.id]:previous.filter(id=>id!==member.id))}/>
+            {member.name}
+          </label>)}
+          {!candidates.length && <span>No visible members match.</span>}
+        </div>
+      </div>
       <label className="syn-field">
-        <span>Invite members (emails, comma-separated)</span>
+        <span>Invite members by available emails (optional)</span>
         <textarea
           className="syn-input"
           value={inviteEmails}
@@ -597,6 +614,7 @@ const synStyles = `
 .syn-field{display:flex;flex-direction:column;gap:6px;font:600 10px var(--sans);letter-spacing:.04em;color:var(--muted)}
 .syn-input{background:var(--graphite);border:1px solid var(--line-dark);border-radius:6px;padding:9px 12px;color:var(--soft);font:400 13px var(--sans);resize:vertical;transition:border-color .15s}
 .syn-input:focus{outline:none;border-color:var(--cobalt)}
+.syn-invite-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;max-height:180px;overflow-y:auto;padding:6px}.syn-invite-list label{display:flex;align-items:center;gap:8px;overflow-wrap:anywhere;min-width:0;font-size:12px}
 .syn-row{display:flex;gap:12px;flex-wrap:wrap}
 .syn-row .syn-field{flex:1;min-width:160px}
 .syn-type-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}

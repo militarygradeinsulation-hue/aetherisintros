@@ -71,8 +71,31 @@ try {
     await db.query('insert into public.profiles(id,name) values($1,$2)', [id, 'Synthetic member'])
   }
   await db.query("insert into public.user_roles(user_id,role) values($1,'admin')", [ADMIN])
-  for (const entry of migrations.filter(entry => Number(entry.tag.slice(0, 4)) >= 22 && !missing.has(Number(entry.tag.slice(0, 4))))) {
-    await db.exec(read('drizzle/migrations/' + entry.tag + '.sql'))
+  // These forward private-library changes require the deliberately absent 0065
+  // family. Rehearse its restoration first, then apply the dependent changes
+  // in journal order. No migration is dropped from the complete rehearsal.
+  const dependent = new Set([110, 112])
+  const deferred = migrations.filter(entry => dependent.has(Number(entry.tag.slice(0, 4))))
+  assert.equal(deferred.length, dependent.size, 'Expected private-library prerequisites must be in the journal')
+  for (const entry of migrations.filter(entry => {
+    const n = Number(entry.tag.slice(0, 4))
+    return n >= 22 && !missing.has(n) && !dependent.has(n)
+  })) {
+    // Use the same observed legacy catalog prerequisites as the primary
+    // offline migration suite. This rehearsal intentionally omits only the
+    // three selected member families, not the independent live-only aliases.
+    if (entry.tag.startsWith('0100_')) {
+      await db.exec(read('scripts/recovery/fixtures/live-only-syndication.sql'))
+    }
+    if (entry.tag.startsWith('0101_')) {
+      await db.exec(read('supabase/migrations/20261026120000_wire_remote_data_layers.sql'))
+      await db.exec('CREATE PUBLICATION supabase_realtime')
+    }
+    try {
+      await db.exec(read('drizzle/migrations/' + entry.tag + '.sql'))
+    } catch (error) {
+      throw new Error('Member family rehearsal migration ' + entry.tag + ' failed: ' + error.message, { cause: error })
+    }
   }
   const before = await svc('select id,name from public.profiles order by id')
   for (const family of families) {
@@ -84,6 +107,10 @@ try {
     catch (error) { await db.exec('rollback'); throw error }
     await assert.rejects(assertEntireFamilyAbsent(db, family), /Refuse existing/)
     for (const tag of filesFor(family)) console.log('Rehearsed', tag, createHash('sha256').update(read('drizzle/migrations/' + tag + '.sql')).digest('hex'))
+  }
+  for (const entry of deferred) {
+    await db.exec(read('drizzle/migrations/' + entry.tag + '.sql'))
+    console.log('Rehearsed dependent migration', entry.tag)
   }
   assert.deepEqual(await svc('select id,name from public.profiles order by id'), before, 'Recovery preserves pre-existing synthetic profiles')
   // Explicit fixture ONLY: module tests do not stand in for real signup,

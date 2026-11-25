@@ -67,7 +67,8 @@ function LandingButlerIdeas() {
   return <div className="ael-butler-ideas">
     <button type="button" className="ael-butler-idea-trigger"
       onClick={nextTip} aria-label="Ask Butler for an idea about Ask Intros"
-      aria-describedby="ael-butler-idea-message">
+      aria-expanded={!dismissed}
+      aria-describedby={dismissed ? undefined : 'ael-butler-idea-message'}>
       <ButlerAvatar robot className="butler-home-robot" view="social" />
       <span className="ael-butler-idea-action">ASK BUTLER FOR AN IDEA <ArrowUpRight aria-hidden="true" size={14}/></span>
     </button>

@@ -301,12 +301,19 @@ async function boot({ actualMembershipGate = false } = {}) {
   await db.exec(passportSource[1])
   for (const m of migrations) {
     try {
-      // The live database had legacy syndication tables not declared by frozen
-      // Drizzle 0075. Model that fact explicitly before 0100 in this test-only
+      // The live database had legacy syndication and referral columns not declared by frozen
+      // Drizzle 0072/0075. Model that fact explicitly before 0100 in this test-only
       // PGlite baseline; never apply the fixture as a production migration.
       if (m.startsWith('0100_') && !privateLibraryFocused) {
         const synthetic = join(here, '..', 'recovery', 'fixtures', 'live-only-syndication.sql')
         await db.exec(readFileSync(synthetic, 'utf8'))
+      }
+      // 0101–0108 operate on the domain tables created through the Supabase
+      // migration stream. Replay the actual historical source, not permissive
+      // stubs or skipped RLS statements. This runs only in disposable PGlite.
+      if (m.startsWith('0101_')) {
+        await db.exec(readFileSync(join(migrationsDir, '../../supabase/migrations/20261026120000_wire_remote_data_layers.sql'), 'utf8'))
+        await db.exec('CREATE PUBLICATION supabase_realtime')
       }
       await db.exec(readFileSync(join(migrationsDir, m), 'utf8'))
     } catch (error) { throw new Error(`Migration ${m} failed: ${error.message}`, { cause: error }) }
@@ -338,7 +345,7 @@ console.log(`Migrations: ${migrations.join(', ')}`)
 for (const file of suites) {
   console.log(`\n${file.replace('.check.mjs', '')}`)
   const ok = (cond, msg) => { if (cond) { pass++; console.log('  ✓', msg) } else { fail++; console.log('  ✗', msg) } }
-  const ctx = { ...(await boot({ actualMembershipGate: ['zz-confirmed-onboarding.check.mjs', 'exchange.check.mjs'].includes(file) })), ok, A, B, C, ADMIN }
+  const ctx = { ...(await boot({ actualMembershipGate: ['zz-confirmed-onboarding.check.mjs', 'exchange.check.mjs', 'syndication-rooms.check.mjs', 'warm-referral-engine.check.mjs'].includes(file) })), ok, A, B, C, ADMIN }
   try { await (await import(join(here, file))).default(ctx) } catch (e) { fail++; console.log('  ✗ suite crashed:', e.message) }
   await ctx.db.close()
 }
