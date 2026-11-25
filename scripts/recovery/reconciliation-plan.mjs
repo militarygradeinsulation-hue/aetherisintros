@@ -33,9 +33,15 @@ export function reconciliationPlan({ repo, ledger, pending }) {
     return Number(value)
   }
   const rows = ledger.map(row => {
-    if (!row || !/^[0-9]+$/.test(String(row.id)) || ids.has(String(row.id)) || !/^[a-f0-9]{64}$/.test(row.hash)) throw Error('Invalid or duplicate ledger row')
+    if (!row || !/^[0-9]+$/.test(String(row.id)) || ids.has(String(row.id)) || typeof row.hash !== 'string') throw Error('Invalid or duplicate ledger row')
+    const created_at = timestamp(row.created_at)
+    // Older operator-written entries use manual:<journal-tag> rather than a
+    // content hash. Recognize only the exact journal tag at its own timestamp.
+    // A marker is never accepted as proof that any SQL bytes were executed.
+    const manual = entries.find(e => row.hash === 'manual:' + e.tag && created_at === e.when)
+    if (!/^[a-f0-9]{64}$/.test(row.hash) && !manual) throw Error('Invalid or unrecognized ledger hash')
     ids.add(String(row.id))
-    return { id: String(row.id), hash: row.hash, created_at: timestamp(row.created_at) }
+    return { id: String(row.id), hash: row.hash, created_at, kind: manual ? 'manual-marker' : 'sha256' }
   })
   const latest = Math.max(...rows.map(r => r.created_at))
   const migrations = entries.map(entry => {
@@ -43,13 +49,15 @@ export function reconciliationPlan({ repo, ledger, pending }) {
     const matching = rows.filter(r => r.hash === sha256)
     const atTime = rows.filter(r => r.created_at === entry.when)
     const ambiguous = matching.length > 1 || atTime.length > 1 || (matching.length === 1 && atTime.some(r => r.hash !== sha256))
-    const status = ambiguous ? 'AMBIGUOUS' : matching.length ? 'APPLIED' : atTime.length ? 'HASH_CONFLICT' : 'PENDING'
+    const manual = atTime.length === 1 && atTime[0].kind === 'manual-marker'
+    const status = ambiguous ? 'AMBIGUOUS' : manual ? 'MANUAL_UNVERIFIED' : matching.length ? 'APPLIED' : atTime.length ? 'HASH_CONFLICT' : 'PENDING'
     return { tag: entry.tag, sha256, journalTimestamp: entry.when, status, ledgerIds: matching.map(r => r.id), timestampLedgerIds: atTime.map(r => r.id), outOfOrder: status === 'PENDING' && entry.when < latest }
   })
   const selected = migrations.filter(m => pending.includes(m.tag))
   const blockers = selected.filter(m => m.status !== 'PENDING').map(m => `${m.tag}: ${m.status}; excluded from recovery`)
   // Preserve every mismatch, even outside the selected recovery range.
   for (const m of migrations.filter(m => ['HASH_CONFLICT', 'AMBIGUOUS'].includes(m.status))) blockers.push(`${m.tag}: ${m.status}; compare authoritative definitions and prepare a new forward repair`)
+  for (const m of migrations.filter(m => m.status === 'MANUAL_UNVERIFIED')) blockers.push(`${m.tag}: MANUAL_UNVERIFIED; verify live definitions, permissions and behavior; do not replay or relabel`)
   const knownHashes = new Set(migrations.map(m => m.sha256))
   const unmatchedLedgerRows = rows.filter(r => !knownHashes.has(r.hash))
   for (const row of unmatchedLedgerRows.filter(r => !entries.some(e => e.when === r.created_at))) blockers.push(`Ledger row ${row.id}: unknown hash and timestamp; reconcile provenance before activation`)
