@@ -5,7 +5,8 @@ import { MemberThumbnail } from '../components/shared/MemberThumbnail';
 /* CRM Contacts pattern, sourced from the REAL Bridge directory.
  * Search, saved and connection actions remain the signed-in handlers.
  */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { directoryWindow, defaultDirectoryFilters, type DirectoryFilters } from './directory-window';
 import { Bookmark, Handshake, ListFilter, Network, Search, UserRound, Users } from 'lucide-react';
 import type { NetworkMember } from '@/intros-ui/networkData';
 import type { ActivePage } from '@/intros-ui/components/layout/TopNavigation';
@@ -14,7 +15,7 @@ import './ledger-directory.css';
 
 export function LedgerDirectory({
   experience = 'business', members, isLive, connectedMemberIds, savedMemberIds, onToggleConnect, onToggleSave,
-  onRequestIntro, onNavigate, searchQuery = '',
+  onRequestIntro, onNavigate, searchQuery = '', onSearchChange, filters, onFiltersChange,
 }: {
   experience?: ExperienceView;
   members: NetworkMember[]; isLive: boolean; connectedMemberIds: Set<string>; savedMemberIds: Set<string>;
@@ -22,16 +23,33 @@ export function LedgerDirectory({
   onRequestIntro: (person: NetworkMember) => void;
   onNavigate: (page: ActivePage, memberId?: string) => void;
   searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  filters?: DirectoryFilters;
+  onFiltersChange?: (filters: DirectoryFilters) => void;
 }) {
-  const [search, setSearch] = useState(searchQuery);
-  useEffect(() => { setSearch(searchQuery); }, [searchQuery]);
-  const [role, setRole] = useState('all');
-  const [sort, setSort] = useState<'name' | 'match'>('match');
-  const filtered = useMemo(() => { const rows=members.filter(person => {
-    const query = search.trim().toLowerCase();
-    const text = [person.name, person.title, person.company, person.industry, person.location].join(' ').toLowerCase();
-    return (!query || text.includes(query)) && (role === 'all' || person.roleType === role);
-  }).sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : b.matchScore - a.matchScore); return sort === 'match' ? newcomerLane(rows,p=>p.id,p=>Boolean(p.newcomerEligible)) : rows; }, [members, search, role, sort]);
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+  const [localFilters, setLocalFilters] = useState(defaultDirectoryFilters);
+  useEffect(() => { setLocalSearch(searchQuery); }, [searchQuery]);
+  const search = onSearchChange ? searchQuery : localSearch;
+  const state = filters ?? localFilters;
+  const { role, sort, page } = state;
+  const changeFilters = onFiltersChange ?? setLocalFilters;
+  const setSearch = (value: string) => {
+    (onSearchChange ?? setLocalSearch)(value);
+    changeFilters({ ...state, page: 0 });
+  };
+  const deferredSearch = useDeferredValue(search);
+  const indexed = useMemo(() => members.map(person => ({
+    person, text: [person.name, person.title, person.company, person.industry, person.location].join(' ').toLowerCase()
+  })), [members]);
+  const filtered = useMemo(() => {
+    const query = deferredSearch.trim().toLowerCase();
+    const rows = indexed.filter(({person,text}) => (!query || text.includes(query)) && (role === 'all' || person.roleType === role))
+      .map(({person}) => person).sort((a,b) => sort === 'name' ? a.name.localeCompare(b.name) : b.matchScore - a.matchScore);
+    return sort === 'match' ? newcomerLane(rows,p=>p.id,p=>Boolean(p.newcomerEligible)) : rows;
+  }, [indexed, deferredSearch, role, sort]);
+  const visible = directoryWindow(filtered,page);
+  const openToIntros = useMemo(()=>members.filter(m=>m.openToIntros).length,[members]);
   const newcomer=filtered.find(p=>p.newcomerEligible);
   return <>{newcomer&&<section className="ledger-directory" aria-label="Newcomer lane"><Panel title="Newcomer lane" subtitle="A relevant new member, with room to build a network. Selection rotates daily; fit scores stay unchanged."><button className="ledger-ui-button secondary" onClick={()=>onNavigate('people',newcomer.id)}>{newcomer.name} · {newcomer.title}</button><p>New to Ask Intros. Recommendations are introductions to explore, not hiring decisions.</p></Panel></section>}<div hidden={experience !== 'social'}><PeopleDirectoryView members={members} isLive={isLive} onNavigate={onNavigate} onRequestIntro={onRequestIntro} connectedMemberIds={connectedMemberIds} onToggleConnect={onToggleConnect}/></div><div className="ledger-directory" hidden={experience === 'social'}>
     <PageHeader eyebrow="Relationships / Contacts" title="People & Network"
@@ -44,7 +62,7 @@ export function LedgerDirectory({
       <StatCard label="People in directory" value={String(members.length)} hint={isLive ? 'Verified member network' : 'Guided showcase'} icon={<Users size={17}/>}/>
       <StatCard label="Connections" value={String(connectedMemberIds.size)} hint="Members you have connected with" icon={<Network size={17}/>}/>
       <StatCard label="Saved contacts" value={String(savedMemberIds.size)} hint="Private saved relationships" icon={<Bookmark size={17}/>}/>
-      <StatCard label="Open to intros" value={String(members.filter(m => m.openToIntros).length)} hint="People welcoming introductions" icon={<Handshake size={17}/>}/>
+      <StatCard label="Open to intros" value={String(openToIntros)} hint="People welcoming introductions" icon={<Handshake size={17}/>}/>
     </div>
     <Panel title="Member records" subtitle={String(filtered.length) + ' matching people'}
       action={<span className="ledger-directory-mode">{isLive ? 'LIVE DIRECTORY' : 'SHOWCASE DIRECTORY'}</span>} bodyClassName="ledger-directory-panel">
@@ -53,7 +71,7 @@ export function LedgerDirectory({
           <input value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search name, company, industry or city…" />
         </label>
         <label className="ledger-directory-select"><ListFilter size={15}/><span className="sr-only">Filter role</span>
-          <select aria-label="Filter member role" value={role} onChange={event=>setRole(event.target.value)}>
+          <select aria-label="Filter member role" value={role} onChange={event=>changeFilters({...state,role:event.target.value,page:0})}>
             <option value="all">All roles</option>
             <option value="founder">Founders</option><option value="investor">Investors</option>
             <option value="operator">Operators</option><option value="advisor">Advisors</option>
@@ -61,7 +79,7 @@ export function LedgerDirectory({
           </select>
         </label>
         <label className="ledger-directory-select"><span className="sr-only">Sort members</span>
-          <select aria-label="Sort members" value={sort} onChange={event=>setSort(event.target.value as 'name' | 'match')}>
+          <select aria-label="Sort members" value={sort} onChange={event=>changeFilters({...state,sort:event.target.value as 'name' | 'match',page:0})}>
             <option value="match">Match score</option><option value="name">Name</option>
           </select>
         </label>
@@ -70,7 +88,7 @@ export function LedgerDirectory({
         <table role="table" className="ledger-directory-table" data-presentation={experience === 'social' ? 'cards' : 'table'}>
           <thead role="rowgroup"><tr role="row"><th scope="col" role="columnheader">Member</th><th scope="col" role="columnheader">Industry / Role</th><th scope="col" role="columnheader">Location</th><th scope="col" role="columnheader">Fit</th><th scope="col" role="columnheader">Relationship</th><th scope="col" role="columnheader">Actions</th></tr></thead>
           <tbody role="rowgroup">
-          {filtered.map(person => <tr role="row" key={person.id}>
+          {visible.rows.map(person => <tr role="row" key={person.id}>
             <td role="cell"><button type="button" className="ledger-directory-person" onClick={() => onNavigate('people',person.id)}>
               <MemberThumbnail name={person.name} source={person.avatarUrl} className="ledger-person-initial"/>
               <span><strong>{person.name}</strong><small>{person.title} · {person.company}</small></span>
@@ -95,6 +113,13 @@ export function LedgerDirectory({
         </table>
         {!filtered.length && <div className="ledger-ui-empty">{members.length ? 'No matching people. Clear a filter or try another keyword.' : isLive ? 'The verified directory is loading or unavailable.' : 'No people yet.'}</div>}
       </div>
+      <nav className="ledger-directory-pages" aria-label="Directory pages">
+        <span role="status">{filtered.length ? `Showing ${visible.start+1}–${visible.end} of ${filtered.length}` : 'No matching records'}{search!==deferredSearch?' · Updating results…':''}</span>
+        <div>
+          <button type="button" className="ledger-ui-button secondary" disabled={visible.page===0} onClick={()=>changeFilters({...state,page:visible.page-1})}>Previous</button>
+          <button type="button" className="ledger-ui-button secondary" disabled={visible.page+1>=visible.pages} onClick={()=>changeFilters({...state,page:visible.page+1})}>Next</button>
+        </div>
+      </nav>
     </Panel>
   </div></>;
 }

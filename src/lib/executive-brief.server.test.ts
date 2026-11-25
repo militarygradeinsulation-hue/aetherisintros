@@ -39,6 +39,8 @@ describe('executive brief authorization',()=>{
     for(const table of ['crm_tasks','crm_opportunities','crm_people']) expect(byTable(table)[0]?.get('owner_id')).toBe('eq.'+owner);
     expect(byTable('meetings')[0]?.get('meeting_participants.user_id')).toBe('eq.'+owner);
     expect(byTable('intro_requests')[0]?.get('target_user_id')).toBe('eq.'+owner);
+    expect(byTable('intro_outcomes')[0]?.get('author_id')).toBe('eq.'+owner);
+    expect(byTable('intro_outcomes')[0]?.get('select')).not.toContain('private_note');
     for(const table of ['memories','relationships']) for(const q of byTable(table)) expect(q.get('user_id')).toBe('eq.'+owner);
     expect(byTable('memories').every(q=>q.get('scope')==='eq.private')).toBe(true);
     expect(byTable('crm_people')[0]?.get('deleted_at')).toBe('is.null');

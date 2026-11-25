@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState, type SetStateAction } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { loadButlerHistory, saveButlerTurn } from '@/lib/butler.functions'
+import type { ButlerUsage } from '@/lib/butler-budget'
 
-export interface ButlerDisplayTurn { id?: string; at?: string; role: 'user' | 'assistant'; content: string; did?: string[]; sources?: { title: string; url: string }[] }
+export interface ButlerDisplayTurn { id?: string; at?: string; role: 'user' | 'assistant'; content: string; did?: string[]; sources?: { title: string; url: string }[]; usage?: ButlerUsage }
 const welcome: ButlerDisplayTurn = { role: 'assistant', content: 'I’m your personal butler. Ask me to research, analyze a file, find account information, draft in your voice, or help get something done.' }
 const identify = (turn: ButlerDisplayTurn) => ({ ...turn, id: turn.id ?? crypto.randomUUID(), at: turn.at ?? new Date().toISOString() })
 

@@ -1,6 +1,7 @@
 /** Private decision support. All inputs must be account-authorized records.
  * No AI calls, writes, outreach or inferred revenue. Missing evidence stays missing.
  */
+import { summarizeRecordedRelationships, type ReportedOutcome } from './recorded-relationships';
 export const BRIEF_LIMIT = 12;
 const DAY = 86_400_000;
 export type Slice<T> = { rows: readonly T[]; state: 'ready' | 'unavailable'; limited: boolean };
@@ -18,6 +19,7 @@ export type BriefInputs = {
   connections: Slice<{ id: string }>;
   notes: Slice<{ id: string }>;
   mindprint: 'available' | 'not-recorded' | 'unavailable';
+  outcomes?: Slice<ReportedOutcome>;
 };
 export type Destination = 'tasks' | 'pipeline' | 'meetings' | 'intros' | 'contacts';
 export type BriefAction = {
@@ -89,6 +91,7 @@ export function buildExecutiveBrief(input: BriefInputs, now = Date.now()) {
   const sources = (['tasks','opportunities','meetings','introductions','contacts','connections','notes'] as const).map(key => ({
     key, state: input[key].state, sample: input[key].state === 'ready' ? input[key].rows.length : null, limited: input[key].limited,
   }));
-  return { asOf: new Date(now).toISOString(), actions: actions.slice(0, BRIEF_LIMIT), moreActions: actions.length > BRIEF_LIMIT, sources, mindprint: input.mindprint };
+  const relationshipResults = input.outcomes?.state==='ready' ? { ...summarizeRecordedRelationships(input.outcomes.rows), limited: input.outcomes.limited } : null;
+  return { asOf: new Date(now).toISOString(), actions: actions.slice(0, BRIEF_LIMIT), moreActions: actions.length > BRIEF_LIMIT, sources, mindprint: input.mindprint, relationshipResults };
 }
 export type ExecutiveBrief = ReturnType<typeof buildExecutiveBrief>;

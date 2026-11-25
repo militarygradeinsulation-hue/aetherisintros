@@ -27,3 +27,6 @@
 .ledger-directory-actions button {display:grid;place-items:center;width:31px;height:30px;color:var(--ledger-crm-muted);border:1px solid var(--ledger-crm-border);background:transparent}
 .ledger-directory-actions button:hover,.ledger-directory-actions button.saved {border-color:var(--ledger-crm-accent);color:var(--ledger-crm-accent)}
 @media(max-width:650px){.ledger-directory-toolbar {padding:10px}.ledger-directory-search {flex-basis:100%}.ledger-directory-select {flex:1}.ledger-directory-stats .ledger-ui-stat{min-height:95px}}
+
+.ledger-directory-pages{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-top:1px solid var(--ledger-crm-border);font-size:12px;color:var(--ledger-crm-muted);flex-wrap:wrap}
+.ledger-directory-pages>div{display:flex;gap:8px}.ledger-directory-pages button:disabled{opacity:.5;cursor:default}

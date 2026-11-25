@@ -21,6 +21,7 @@ interface GatewayOptions {
   messages: ChatMessage[]
   tools?: ToolDef[]
   maxSteps?: number
+  beforeProviderRequest?: () => void
 }
 
 /** Reads an SSE stream and returns the final `response.completed` payload. */
@@ -80,7 +81,7 @@ function extractText(output: ResponsesOutputItem[]): string {
 }
 
 /** Streams one Lovable AI gateway Responses call, running tool steps until a final answer. */
-export async function gatewayChat({ system, messages, tools = [], maxSteps = 8 }: GatewayOptions): Promise<string> {
+export async function gatewayChat({ system, messages, tools = [], maxSteps = 8, beforeProviderRequest }: GatewayOptions): Promise<string> {
   const apiKey = process.env['LOVABLE_API_KEY']
   if (!apiKey) throw new Error('missing-key')
 
@@ -95,6 +96,7 @@ export async function gatewayChat({ system, messages, tools = [], maxSteps = 8 }
   }))
 
   for (let step = 0; step < maxSteps; step++) {
+    beforeProviderRequest?.()
     const res = await fetch('https://ai.gateway.lovable.dev/v1/responses', {
       method: 'POST', signal: deadline,
       headers: {
@@ -138,7 +140,7 @@ export async function gatewayChat({ system, messages, tools = [], maxSteps = 8 }
 }
 
 /** Calls a RouteLLM (OpenAI-compatible chat completions) account, with tool steps. */
-export async function routeLlmChat({ system, messages, tools = [], maxSteps = 8 }: GatewayOptions): Promise<string> {
+export async function routeLlmChat({ system, messages, tools = [], maxSteps = 8, beforeProviderRequest }: GatewayOptions): Promise<string> {
   const apiKey = process.env['ROUTELLM_API_KEY']
   if (!apiKey) throw new Error('missing-key')
 
@@ -150,6 +152,7 @@ export async function routeLlmChat({ system, messages, tools = [], maxSteps = 8 
   }))
 
   for (let step = 0; step < maxSteps; step++) {
+    beforeProviderRequest?.()
     const res = await fetch('https://routellm.abacus.ai/v1/chat/completions', {
       method: 'POST', signal: deadline,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${apiKey}` },
