@@ -33,10 +33,10 @@ function fixture({member=true,business=true,ownedCompany=true}={}) {
       else if(path==='crm_pipeline_stages')value=[{id:STAGE,name:'Discovery'}];
       else if(path==='crm_tasks'||path==='crm_opportunities'){
         if(method==='POST'&&body){
-          records.set(String(body.id),body);value={id:body.id};
+          records.set(String(body['id']),body);value={id:body['id']};
         }else if(url.searchParams.has('id')){
           const id=url.searchParams.get('id')!.replace('eq.','');
-          const found=records.get(id);value=found&&url.searchParams.get('owner_id')==='eq.'+found.owner_id?[found]:[];
+          const found=records.get(id);value=found&&url.searchParams.get('owner_id')==='eq.'+found['owner_id']?[found]:[];
         }else if(path==='crm_opportunities')value=[opp];
       }
       return new Response(JSON.stringify(value),{status:200,headers:{'Content-Type':'application/json'}});
@@ -67,7 +67,7 @@ describe('approved business action write authority',()=>{
     expect(second).toMatchObject({id:first.id,existing:true});
     expect(writes(f)).toHaveLength(1);
     expect(writes(f)[0]?.body).toMatchObject({owner_id:OWNER,company_id:COMPANY,assignee:'Sales manager',status:'open'});
-    expect(writes(f)[0]?.body?.detail).toContain('User-supplied Golden Report');
+    expect(writes(f)[0]?.body?.['detail']).toContain('User-supplied Golden Report');
     expect(f.reads.find(r=>r.path==='crm_companies')?.url.searchParams.get('owner_id')).toBe('eq.'+OWNER);
   });
   it('saves only an unquantified opportunity in the existing owner pipeline',async()=>{
